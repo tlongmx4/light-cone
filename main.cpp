@@ -27,7 +27,7 @@ int main() {
         BeginMode3D(camera);
 
         DrawGrid(20, 1.0f);
-        DrawCubeWires({0, 0, 0}, 720, 720, 720, DARKGRAY);
+        DrawCubeWires({0, 0, 0}, 20, 20, 20, DARKGRAY);
         EndMode3D();
         EndDrawing();
 
