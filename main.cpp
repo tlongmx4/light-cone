@@ -1,15 +1,34 @@
 #include "raylib.h"
+#include <cmath>
+#include <vector>
+
+constexpr double c = 1.0;
 
 struct Event {
-    double x; // space
     double t; // time
-    double z; // space
+    double x; // space
+    double y;
+    double z;
 };
+
+enum class Causality {
+    FutureCone,
+    PastCone,
+    FutureInterior,
+    PastInterior,
+    Outside,
+    Unknown
+};
+
+Causality classify(const Event& from, const Event& to);
 
 constexpr int SCREEN_WIDTH = 1280;
 constexpr int SCREEN_HEIGHT = 720;
 
 int main() {
+
+    double v = 0.0; // observer velocity
+    std::vector<Event> events;
 
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Light Cone");
     SetTargetFPS(60);
