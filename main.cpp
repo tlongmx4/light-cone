@@ -21,7 +21,12 @@ enum class Causality {
     Unknown
 };
 
-Event boost(const Event& e, double v);
+Event boost(const Event& e, double v) {
+    double gamma = 1 / sqrt(1 - v * v);
+    double tPrime = gamma * (e.t - v * e.x);
+    double xPrime = gamma * (e.x - v * e.t);
+    return { tPrime, xPrime, e.y, e.z};
+}
 
 Vector3 toScreen(const Event& e) {
     return { (float)e.x, (float)e.t, (float)e.z };
@@ -143,8 +148,10 @@ int main() {
 
         BeginMode3D(camera);
 
-        for (const auto& e : events)
-            DrawSphere(toScreen(e), 0.2f, colorFor(classify(origin, e)));
+        for (const auto& e : events) {
+            Event b = boost(e, v);
+            DrawSphere(toScreen(b), 0.2f, colorFor(classify(origin, b)));
+        }
 
         DrawGrid(20, 1.0f);
 
