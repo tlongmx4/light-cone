@@ -107,7 +107,13 @@ int main() {
     for (const auto& e : cases)
         printf("t=%+.0f x=%+.0f  ->  %s\n", e.t, e.x, name(classify(origin, e)));
 
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_HIGHDPI);
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Light Cone");
+
+    int m = GetCurrentMonitor();
+    SetWindowSize(GetMonitorWidth(m), GetMonitorHeight(m));
+    SetWindowPosition(0, 0);
+
     SetTargetFPS(60);
 
     Camera3D camera = { 0 };
@@ -119,7 +125,7 @@ int main() {
 
     float radius = 35.0f;
     float theta  = 0.785f;
-    float phi    = 1.2f;
+    float phi    = 1.5708f;
 
     while (!WindowShouldClose()) {
 
@@ -135,6 +141,12 @@ int main() {
             radius -= wheel * radius * 0.1f;
             if (radius < 3.0f) radius = 3.0f;
             if (radius > 100.0f) radius = 100.0f;
+        }
+
+        if (wheel != 0.0f) {
+            camera.fovy -= wheel * camera.fovy * 0.1f;
+            if (camera.fovy < 5.0f)   camera.fovy = 5.0f;
+            if (camera.fovy > 120.0f) camera.fovy = 120.0f;
         }
 
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT) && !onBar) {
@@ -162,16 +174,16 @@ int main() {
             DrawSphere(toScreen(b), 0.2f, colorFor(classify(origin, b)));
         }
 
-        DrawGrid(20, 1.0f);
+        DrawGrid(30, 1.0f);
 
-        DrawCubeWires({0, 0, 0}, 20, 20, 20, DARKGRAY);
+        DrawCubeWires({0, 0, 0}, 30, 30, 30, DARKGRAY);
 
         DrawLine3D({0,-10,0}, {0,10,0}, GREEN);
         DrawLine3D({-10,0,0}, {10,0,0}, RED);
         DrawLine3D({0,0,-10}, {0,0,10}, BLUE);
 
-        DrawCylinderWiresEx({0,0,0}, {0,10,0}, 0.0f, 10.0f, 24, SKYBLUE);
-        DrawCylinderWiresEx({0,0,0}, {0,-10,0}, 0.0f, 10.0f, 24, ORANGE);
+        DrawCylinderWiresEx({0,0,0}, {0,15,0}, 0.0f, 10.0f, 24, SKYBLUE);
+        DrawCylinderWiresEx({0,0,0}, {0,-15,0}, 0.0f, 10.0f, 24, ORANGE);
 
 
         EndMode3D();
