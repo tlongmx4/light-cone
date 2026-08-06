@@ -2,6 +2,8 @@
 
 An interactive 3D visualization of the light cone in special relativity, written in C++ with [raylib](https://www.raylib.com/).
 
+![Light cone with events classified by causal relationship to the origin](docs/shot.png)
+
 Every event in spacetime falls into one of five categories relative to a chosen origin event, and the program computes that classification from the spacetime interval rather than from anything about how the scene is drawn.
 
 ## What it shows
@@ -36,12 +38,31 @@ The sign of `Δt` then picks future from past. Five categories out of two number
 
 Unlike distance and duration, `s²` is the same in every reference frame. Boost to any velocity and it comes out unchanged, which is why classification can be done once and trusted regardless of how fast an observer is moving.
 
+## The boost
+
+The velocity slider applies a Lorentz transformation to every event, re-plotting it as a moving observer would measure it:
+
+```
+γ  = 1 / sqrt(1 - v²)
+t' = γ(t - v·x)
+x' = γ(x - v·t)
+```
+
+`y` and `z` are left alone, since motion along x does not affect the perpendicular directions.
+
+Drag the slider and watch what moves and what does not. The events slide. The cone does not, because it is the same cone for every observer. An event on the null cone slides *along* the surface and never leaves it, since a lightlike interval stays lightlike at any velocity.
+
+The most interesting case is an event in absolute elsewhere. Push the velocity high enough and one of the red spheres will cross from above the plane to below it, meaning two observers genuinely disagree about whether it happened before or after the origin event. It stays red the whole time. Time ordering is negotiable for spacelike separation. Causal category is not.
+
 ## Controls
 
 | Input | Action |
 |---|---|
 | Left click + drag | Orbit |
 | Scroll | Zoom |
+| Drag the slider | Change observer velocity, -0.9c to 0.9c |
+
+Velocity is clamped short of the speed of light because γ diverges at exactly 1.
 
 ## Building
 
@@ -55,7 +76,7 @@ cmake --build build
 
 ## Verification
 
-The program runs six assertions against `classify` on startup and prints the results before opening a window. Each case targets one branch:
+The program checks `classify` against six known cases on startup and prints the results to the console before opening a window. Each case targets one branch:
 
 | Event `(t, x, y, z)` | Expected |
 |---|---|
@@ -68,12 +89,15 @@ The program runs six assertions against `classify` on startup and prints the res
 
 The `1, 1, 0, 0` case is the one that matters most. It only lands on the cone if the minus sign sits on the time term, so a sign error in the interval shows up there immediately.
 
+There is a second check that runs continuously. Every sphere is classified *after* being boosted, so if a color changes while the slider moves, the transform is wrong. Invariance is not asserted anywhere in the code. It either holds on screen or it does not.
+
 ## Roadmap
 
-- Lorentz boost, with the axes tilting under velocity while the cone stays fixed
-- A velocity slider, with the interval displayed before and after the boost as a live invariance check
+- Tilted axes, so the moving observer's coordinate grid is drawn scissoring toward the cone rather than only the events moving
+- The interval printed on screen before and after the boost, as a numeric companion to the visual check
 - Worldlines through the cone
-- Orthographic toggle, so the 45 degree walls can be read off the axes without perspective distortion
+- Perspective toggle, since orthographic is currently permanent
+- Click to place events instead of hardcoding them
 
 ## License
 
