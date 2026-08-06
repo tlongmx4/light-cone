@@ -72,6 +72,8 @@ const Label labels[] = {
     { { 13,   0, 0 }, "ABSOLUTE ELSEWHERE", RED     },
 };
 
+Rectangle bar = { 40, 100, 300, 20 };
+
 constexpr int SCREEN_WIDTH = 1280;
 constexpr int SCREEN_HEIGHT = 720;
 
@@ -121,6 +123,13 @@ int main() {
 
     while (!WindowShouldClose()) {
 
+        Vector2 mouse = GetMousePosition();
+        bool onBar = CheckCollisionPointRec(mouse, bar);
+
+        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT) && onBar) {
+            v = ((mouse.x - bar.x) / bar.width) * 1.8 - 0.9;
+        }
+
         float wheel = GetMouseWheelMove();
         if (wheel != 0.0f) {
             radius -= wheel * radius * 0.1f;
@@ -128,7 +137,7 @@ int main() {
             if (radius > 100.0f) radius = 100.0f;
         }
 
-        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT) && !onBar) {
             Vector2 delta = GetMouseDelta();
 
             theta -= delta.x * 0.005f;
@@ -170,6 +179,12 @@ int main() {
             Vector2 p = GetWorldToScreen(l.pos, camera);
             DrawText(l.text, p.x, p.y, 18, l.color);
         }
+
+        DrawRectangleRec(bar, DARKGRAY);
+        float knob = bar.x + (float)((v + 0.9) / 1.8) * bar.width;
+        DrawRectangle(knob - 3, bar.y - 5, 6, bar.height + 10, WHITE);
+        DrawText(TextFormat("v = %.2f c    gamma = %.2f", v, 1.0/sqrt(1.0 - v*v)),
+                 bar.x, bar.y + 30, 18, WHITE);
 
         DrawFPS(10, 10);
         DrawText("Left Click + Drag to Orbit. Scroll to Zoom.", 10, 40, 20, GREEN);
